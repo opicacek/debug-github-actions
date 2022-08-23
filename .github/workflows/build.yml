@@ -1,0 +1,25 @@
+name: "Build"
+
+on:
+  push
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: 
+        run: echo "Build complete 🚀"

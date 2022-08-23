@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  sayHello:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,9 +18,41 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.4.1
         with:
-          node-version: 12.20.0
-          # node-version-file: .nvmrc
+          node-version-file: .nvmrc
 
-      - name: Run a one-line script
+      - name: Say Hello
         run: echo Hello, world from new pull-request!
-        
+
+      - name: Print whole GITHUB_CONTEXT
+        run: echo "$GITHUB_CONTEXT"
+
+      # "github.ref_name" is the branch name that triggered the workflow run
+      - name: Get branch name that triggered the workflow run
+        run: echo "$github.ref_name"
+
+  comment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: yarn install
+
+      # add comment to newly opened PR
+      # NOTE: Don't get confused by "issue", in GitHub API issues and pull-requests are the same endpoint.
+      - uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Hello World!'
+            })
